@@ -1,0 +1,31 @@
+<style>
+#delay { width: 100% }
+</style>
+<input id="delay" type="range" value="0" min="0" max="200" step="1">
+<div>Delay: <span id="label">0</span> ms</div>
+
+<script src="player.js"></script>
+<script src="clock.js"></script>
+<script>
+var clock = new DelayClock();
+var player = new PeriodicPlayer(clock, {periodSec: 1, src: 'snd/maki_maki_1m.mp3'});
+
+var varClock = new DelayClock();
+var varPlayer = new PeriodicPlayer(varClock, {periodSec: 1, src: 'snd/maki_maki_1m.mp3'});
+
+document.querySelector('#delay').addEventListener('change', onDelayChange);
+var label = document.querySelector('#label');
+
+function onDelayChange(e) {
+  player.stop();
+  varPlayer.stop();
+  var delay = parseInt(this.value);
+  console.log('New delay', delay);
+  varClock.setDelay(delay);
+  player.start();
+  varPlayer.start();
+
+  label.innerText = delay;
+}
+
+</script>

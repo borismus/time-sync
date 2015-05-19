@@ -1,0 +1,27 @@
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<style>
+#clock { font-size: 200% }
+</style>
+</head>
+
+<button onclick="start()">Start</button>
+<div id="clock"></div>
+
+<script src="player.js"></script>
+<script src="clock.js"></script>
+<script>
+var clock = new Clock();
+var player = new PeriodicPlayer(clock, {periodSec: 5});
+
+function start() {
+  player.start();
+}
+
+function updateClock() {
+  document.querySelector('#clock').innerHTML = clock.getTimeUntilNextMillis(5000) + ' ms left.';
+  requestAnimationFrame(updateClock);
+}
+updateClock();
+
+</script>
