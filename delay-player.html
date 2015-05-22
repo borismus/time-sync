@@ -1,0 +1,97 @@
+<link rel="import"
+      href="bower_components/polymer/polymer.html">
+
+<dom-module id="delay-player">
+  <!-- scoped CSS for this element -->
+  <style>
+    .root {
+      width: 320px;
+      display: inline-block;
+      background-color: #ccc;
+      border-radius: 8px;
+      padding: 4px;
+    }
+    .control {
+    }
+    .control input {
+      float: right;
+    }
+    .control label {
+      float: left;
+      clear: both;
+    }
+    img {
+      width: 100%;
+    }
+  </style>
+  <template>
+    <div class="root">
+      <!-- any children are rendered here -->
+      <content></content>
+      <img src="ic_speaker_48px.svg"/>
+      <div class="control">
+        <label>Delay: <span>{{delay}}</span> ms</label>
+        <input type="range" value="{{delay::input}}" min="0" max="200" step="1">
+      </div>
+      <div class="control">
+        <label>Gain: <span>{{gain}}</span></label>
+        <input type="range" value="{{gain::input}}" min="0" max="1" step="0.05">
+      </div>
+    </div>
+  </template>
+</dom-module>
+
+<script src="util.js"></script>
+<script src="delay-player.js"></script>
+<script>
+Polymer({
+  is: "delay-player",
+  properties: {
+    delay: {
+      type: Number,
+      value: 0,
+      observer: 'delayChanged'
+    },
+    gain: {
+      type: Number,
+      value: 1,
+      observer: 'gainChanged'
+    },
+    src: {
+      type: String
+    }
+  },
+  attached: function() {
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    var ctx = new AudioContext();
+
+    Util.loadTrackSrc(ctx, this.src, function(buffer) {
+      this.player = new DelayPlayer(ctx, buffer);
+    }.bind(this));
+  },
+
+  start: function() {
+    this.player.start();
+  },
+
+  stop: function() {
+    this.player.stop();
+  },
+
+  gainChanged: function(newValue) {
+    if (this.player) {
+      this.player.setGain(newValue);
+    }
+  },
+
+  delayChanged: function(newValue) {
+    if (this.player) {
+      this.player.setDelay(newValue / 1000);
+    }
+  },
+
+  isPlaying: function() {
+    return !!(this.player && this.player.source);
+  }
+});
+</script>
